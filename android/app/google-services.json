@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "82724233404",
+    "project_id": "donemproje-66e6e",
+    "storage_bucket": "donemproje-66e6e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:82724233404:android:6cb0c41b5274654ec3f0b9",
+        "android_client_info": {
+          "package_name": "com.example.donemproje"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "82724233404-a76mga5clbhiek0cjrpe53jfkins06np.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.donemproje",
+            "certificate_hash": "2b2e0c4b5fa3b8ab0ea7cfd4d89c8719ba6b96b6"
+          }
+        },
+        {
+          "client_id": "82724233404-v29kmrea6lmiti316kvii6dghe4is2nn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVggKO3Efra6ARf0BxBoCCOYLEHTttzGc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "82724233404-v29kmrea6lmiti316kvii6dghe4is2nn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
