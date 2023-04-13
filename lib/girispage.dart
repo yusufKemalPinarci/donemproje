@@ -4,6 +4,7 @@ import 'package:donemproje/listelescreen.dart';
 import 'package:donemproje/listeleturist.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'girispage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -47,9 +48,15 @@ class _GirisPageState extends State<GirisPage> {
         }
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found') {
+          Fluttertoast.showToast(
+           msg: "gmail veya şifre yanlış"
+          );
+
           print('Kullanıcı bulunamadı.');
         } else if (e.code == 'wrong-password') {
-          print('Yanlış parola.');
+          Fluttertoast.showToast(
+              msg: "gmail veya şifre yanlış"
+          );
         }
       } catch (e) {
         print(e);

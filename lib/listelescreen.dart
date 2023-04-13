@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:donemproje/chat_page.dart';
+import 'package:donemproje/girispage.dart';
 import 'package:donemproje/olusturscreen.dart';
 import 'package:donemproje/profilscreen.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ListelePage extends StatefulWidget {
   const ListelePage({Key? key}) : super(key: key);
@@ -11,9 +14,12 @@ class ListelePage extends StatefulWidget {
 }
 
 final firestoreInstance = FirebaseFirestore.instance;
+final User? user = FirebaseAuth.instance.currentUser;
 
 class _ListelePageState extends State<ListelePage> {
   late Stream<QuerySnapshot> _stream;
+
+  var _kendiId;
 
   @override
   void initState() {
@@ -25,26 +31,73 @@ class _ListelePageState extends State<ListelePage> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
+      drawer: Drawer(
+        child: ListView(padding: EdgeInsets.zero, children: [
+          DrawerHeader(
+            child: Icon(Icons.person),
+          ),
+          ListTile(
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => OlusturPage()),
+              );
+            },
+            title: Text("Profil", style: TextStyle(fontSize: 20)),
+          ),
+          ListTile(
+            onTap: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => GirisPage()),
+              );
+
+
+            },
+            title: Text("Çıkış Yap", style: TextStyle(fontSize: 20)),
+          ),
+        ]),
+      ),
+      appBar: AppBar(backgroundColor: Colors.green, actions: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: InkWell(
+              onTap: () {
+                if (user != null) {
+                  _kendiId = user!.uid; // kullanıcının UID'si
+                }
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChatPage(),
+                  ),
+                );
+              },
+              child: Icon(Icons.message)),
+        )
+      ]),
       body: StreamBuilder(
         stream: _stream,
-        builder:
-            (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasData) {
             if (snapshot.data!.docs.isNotEmpty) {
               return ListView.builder(
                 itemCount: snapshot.data!.docs.length,
                 itemBuilder: (BuildContext context, int index) {
-                  var user = snapshot.data!.docs[index];
+                  var Receiver = snapshot.data!.docs[index];
 
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: InkWell(
                       onTap: () {
-
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ProfilPage(userId: user.id),
+                            builder: (context) =>
+                                ProfilPage(ReceiverId: Receiver.id),
                           ),
                         );
                       },
@@ -53,31 +106,30 @@ class _ListelePageState extends State<ListelePage> {
                           height: size.height * .2,
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            border:
-                            Border.all(color: Colors.green, width: 2),
-                            borderRadius:
-                            BorderRadius.all(Radius.circular(10)),
+                            border: Border.all(color: Colors.green, width: 2),
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.only(left: 10),
                                   child: CircleAvatar(
                                     minRadius: 40,
                                     backgroundColor: Colors.green,
-                                    backgroundImage: user["resimUrl"]!=null?NetworkImage(user['resimUrl'])
-                                        : null,
-                                    child: user['resimUrl'] == null
+                                    backgroundImage:
+                                        Receiver["resimUrl"] != null
+                                            ? NetworkImage(Receiver['resimUrl'])
+                                            : null,
+                                    child: Receiver['resimUrl'] == null
                                         ? Icon(Icons.person, size: 40)
                                         : null,
                                   ),
                                 ),
                                 Text(
-                                  user['name'],
+                                  Receiver['name'],
                                   style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
@@ -97,7 +149,10 @@ class _ListelePageState extends State<ListelePage> {
               );
             } else {
               return Center(
-                child: Text("Henüz kullanıcı yok."),
+                child: Text(
+                  "Henüz kullanıcı yok.",
+                  style: TextStyle(color: Colors.green),
+                ),
               );
             }
           } else {
@@ -105,16 +160,17 @@ class _ListelePageState extends State<ListelePage> {
           }
         },
       ),
-
-      floatingActionButton: FloatingActionButton(onPressed: (){
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => OlusturPage(),
-          ),
-        );
-      },child: Icon(Icons.add),backgroundColor: Colors.green),
+      floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => OlusturPage(),
+              ),
+            );
+          },
+          child: Icon(Icons.add),
+          backgroundColor: Colors.green),
     );
   }
 }

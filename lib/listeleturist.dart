@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:donemproje/olusturscreen.dart';
 import 'package:donemproje/profilscreen.dart';
 import 'package:flutter/material.dart';
 
@@ -34,7 +33,7 @@ class _ListeleTuristPageState extends State<ListeleTuristPage> {
               return ListView.builder(
                 itemCount: snapshot.data!.docs.length,
                 itemBuilder: (BuildContext context, int index) {
-                  var user = snapshot.data!.docs[index];
+                  var Receiver = snapshot.data!.docs[index];
 
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -44,7 +43,7 @@ class _ListeleTuristPageState extends State<ListeleTuristPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ProfilPage(userId: user.id),
+                            builder: (context) => ProfilPage(ReceiverId:Receiver.id ),
                           ),
                         );
                       },
@@ -69,15 +68,15 @@ class _ListeleTuristPageState extends State<ListeleTuristPage> {
                                   child: CircleAvatar(
                                     minRadius: 40,
                                     backgroundColor: Colors.green,
-                                    backgroundImage: user["resimUrl"]!=null?NetworkImage(user['resimUrl'])
+                                    backgroundImage: Receiver["resimUrl"]!=null?NetworkImage(Receiver['resimUrl'])
                                         : null,
-                                    child: user['resimUrl'] == null
+                                    child: Receiver['resimUrl'] == null
                                         ? Icon(Icons.person, size: 40)
                                         : null,
                                   ),
                                 ),
                                 Text(
-                                  user['name'],
+                                  Receiver['name'],
                                   style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,

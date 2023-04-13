@@ -49,7 +49,7 @@ class _KayitScreenState extends State<KayitScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => ListelePage(),
+            builder: (context) => GirisPage(),
           ),
         );
 

@@ -26,6 +26,11 @@ String? email = user?.email;
 String? userId = user?.uid;
 File? _imageFile;
 
+late String eskiHakkinda;
+late String eskiYas;
+late String eskiIsim;
+
+
 class _OlusturPageState extends State<OlusturPage> {
   String name = "belirsiz";
 
@@ -34,6 +39,8 @@ class _OlusturPageState extends State<OlusturPage> {
   String? photoUrl;
 
   TextEditingController _isimController = TextEditingController();
+
+
 
   @override
   void initState() {
@@ -44,6 +51,9 @@ class _OlusturPageState extends State<OlusturPage> {
           setState(() {
             name = docSnapshot['name'];
             photoUrl = docSnapshot['resimUrl'] as String?;
+            eskiIsim=name;
+            eskiYas=docSnapshot['yaş'];
+            eskiHakkinda=docSnapshot['hakkinda'];
           });
         }
       },
@@ -81,25 +91,45 @@ class _OlusturPageState extends State<OlusturPage> {
 
 // Resmi yükleme işlemi
     Future uploadImage(String userId) async {
+      Map<String, dynamic> data = {};
+
       if (_imageFile == null) {
         print('Resim seçilmedi.');
-        return;
       }
 
-      final storageRef = FirebaseStorage.instance.ref().child('users/$userId');
-      final uploadTask = storageRef.putFile(_imageFile!);
-      await uploadTask.whenComplete(() => null);
+      if (_imageFile != null) {
+        final storageRef =
+            FirebaseStorage.instance.ref().child('users/$userId');
+        final uploadTask = storageRef.putFile(_imageFile!);
+        await uploadTask.whenComplete(() => null);
 
-      final downloadUrl = await storageRef.getDownloadURL();
-      print('Resim yüklendi. Download URL: $downloadUrl');
+        final downloadUrl = await storageRef.getDownloadURL();
+        print('Resim yüklendi. Download URL: $downloadUrl');
+        data['resimUrl'] = downloadUrl;
+      }
 
-      userDocRef.update({
-        'hakkinda': _hakkindaController.text,
-        'yaş': '$_selectedAge',
-        'resimUrl': '$downloadUrl'
-      });
+      String yeniHakkinda = _hakkindaController.text;
+      if (yeniHakkinda.isEmpty) {
+        yeniHakkinda = eskiHakkinda; // Eski bilgiyi kullan
+      }
 
-      // Firestore belgesine resim URL'sini kaydetmek için aşağıdaki işlemleri yapabilirsiniz.
+      String yeniYas = '$_selectedAge';
+      if (yeniYas.isEmpty) {
+        yeniYas = eskiYas; // Eski bilgiyi kullan
+      }
+
+      String yeniIsim = _isimController.text;
+      if (yeniIsim.isEmpty) {
+        yeniIsim = eskiIsim; // Eski bilgiyi kullan
+      }
+
+      data['hakkinda'] = yeniHakkinda;
+      data['yaş'] = yeniYas;
+      data['name'] = yeniIsim;
+
+      if (data.isNotEmpty) {
+        userDocRef.update(data);
+      }
     }
 
     Future<void> _pickImage(ImageSource source) async {
@@ -138,7 +168,6 @@ class _OlusturPageState extends State<OlusturPage> {
         },
       );
     }
-
     return Scaffold(
       body: ListView(children: [
         Padding(
@@ -200,8 +229,11 @@ class _OlusturPageState extends State<OlusturPage> {
                     Text(
                       "isminiz:",
                       style:
-                      TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),SizedBox(width: 20,),
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      width: 20,
+                    ),
                     Expanded(
                       child: TextFormField(
                         controller: _isimController,
@@ -218,7 +250,7 @@ class _OlusturPageState extends State<OlusturPage> {
                       controller: _hakkindaController,
                       maxLines: 3, // birden fazla satır için
                       decoration: InputDecoration(
-                        hintText: 'Bir şeyler yazın...',
+                        hintText: 'Kendinizi Tanıtın...',
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -238,7 +270,7 @@ class _OlusturPageState extends State<OlusturPage> {
                       },
                       child: Center(
                         child: Text(
-                          "Ogrenci Profil Oluştur",
+                          "PROFİLİNİ OLUŞTUR",
                           style: TextStyle(color: Colors.black),
                         ),
                       )),
